@@ -17,13 +17,18 @@ RowLayout {
     property color iconColor
     property color textColor
 
+    property int iconPixelSize: Appearance.font.iconPixelSize
+    property string iconFamily: Appearance.font.iconFamily
+    property int textPixelSize: Appearance.font.textPixelSize
+    property string textFamily: Appearance.font.textFamily
+
     Text {
         id: iconItem
         text: root.icon
         visible: root.icon !== "" && root.icon !== undefined
         font {
-            pixelSize: Appearance.font.iconPixelSize
-            family: Appearance.font.iconFamily
+            pixelSize: root.iconPixelSize
+            family: root.iconFamily
         }
         color: root.iconColor
     }
@@ -33,8 +38,8 @@ RowLayout {
         text: root.text
         visible: root.text !== "" && root.text !== undefined
         font {
-            pixelSize: Appearance.font.textPixelSize
-            family: Appearance.font.textFamily
+            pixelSize: root.textPixelSize
+            family: root.textFamily
         }
         transform: Translate {
             y: Appearance.textVerticalOffset

@@ -31,5 +31,14 @@ RowLayout {
             textColor: Theme.nord0
             hoverEnabled: true
         }
+
+        IdleInhibitor {
+            id: idleInhibitorModule
+
+            backgroundColor: Theme.nord9
+            iconColor: Theme.nord0
+            textColor: Theme.nord0
+            hoverEnabled: true
+        }
     }
 }
