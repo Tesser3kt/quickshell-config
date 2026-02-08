@@ -22,7 +22,12 @@ PopupWrapper {
         if (days === -1 || hours === -1 || minutes === -1)
             return "Unknown uptime.";
 
-        return days > 0 ? `Up for ${days} days, ${hours} hours and ${minutes} minutes.` : `Up for ${hours} hours and ${minutes} minutes.`;
+        if (days > 0)
+            return `Up for ${days} days, ${hours} hours and ${minutes} minutes.`;
+        else if (hours > 0)
+            return `Up for ${hours} hours and ${minutes} minutes.`;
+        else
+            return `Up for ${minutes} minutes.`;
     }
 
     content: BarText {
