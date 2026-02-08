@@ -40,5 +40,14 @@ RowLayout {
             textColor: Theme.nord0
             hoverEnabled: true
         }
+
+        ActiveWindow {
+            id: activeWindowModule
+
+            backgroundColor: Theme.nord10
+            iconColor: Theme.nord0
+            textColor: Theme.nord6
+            hoverEnabled: true
+        }
     }
 }
