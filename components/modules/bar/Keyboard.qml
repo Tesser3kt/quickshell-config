@@ -18,6 +18,8 @@ BarItem {
         text: KeyboardLayout.layoutShort
         iconColor: root.iconColor
         textColor: root.textColor
+
+        iconPixelSize: 18
     }
 
     HoverHandler {

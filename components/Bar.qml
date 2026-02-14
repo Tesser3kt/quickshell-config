@@ -45,7 +45,7 @@ RowLayout {
             id: activeWindowModule
 
             backgroundColor: Theme.nord10
-            iconColor: Theme.nord0
+            iconColor: Theme.nord6
             textColor: Theme.nord6
             hoverEnabled: true
         }

@@ -59,6 +59,8 @@ PopupWrapper {
                     text: row.modelData
                     iconColor: Theme.nord4
                     textColor: Theme.nord4
+
+                    iconPixelSize: 18
                 }
 
                 HoverHandler {
