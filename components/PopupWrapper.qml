@@ -97,7 +97,6 @@ PopupWindow {
         implicitHeight: wrapper.implicitHeight
 
         anchors.left: parent.left
-        anchors.top: parent.top
         anchors.right: parent.right
 
         state: "closed"

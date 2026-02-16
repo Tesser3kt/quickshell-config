@@ -41,6 +41,6 @@ JsonObject {
         }
         property int radius: 8
         property int gap: 6
-        property string backgroundColor: Theme.nord2
+        property string backgroundColor: Theme.nord1
     }
 }

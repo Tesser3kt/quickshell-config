@@ -14,64 +14,110 @@ import qs.config
 PopupWrapper {
     id: popup
 
-    content: ColumnLayout {
+    property int highlightedIndex: -1
+    property var highlightedItem: null
+
+    onHighlightedIndexChanged: {
+        layoutList.currentIndex = highlightedIndex;
+    }
+
+    onVisibleChanged: {
+        if (!visible) {
+            highlightedIndex = -1;
+            highlightedItem = null;
+        }
+    }
+
+    Component {
+        id: highlight
+        Rectangle {
+            radius: Appearance.popupRadius
+
+            color: Theme.nord0
+            z: 0
+        }
+    }
+
+    content: ListView {
+        id: layoutList
+
+        implicitWidth: 180
+        implicitHeight: contentHeight
+
         spacing: 4
+        interactive: false
 
-        Repeater {
-            model: AllKeyboardLayouts.getDisplayNames()
+        model: AllKeyboardLayouts.getDisplayNames()
+        highlight: highlight
+        highlightFollowsCurrentItem: true
+        focus: true
 
-            Item {
-                id: row
+        highlightMoveDuration: PopupSettings.highlightMoveDuration
+        highlightMoveVelocity: PopupSettings.highlightMoveVelocity
 
-                implicitWidth: 180
-                implicitHeight: 40
+        onModelChanged: {
+            currentIndex = popup.highlightedIndex;
+            highlight.y = popup.highlightedItem.y || 0;
+        }
 
-                required property string modelData
-                required property int index
-                property bool active: index === KeyboardLayout.activeIndex
+        delegate: Item {
+            id: row
 
-                WrapperRectangle {
-                    id: bg
-                    anchors.fill: parent
-                    margin: 10
-                    radius: Appearance.popupRadius
+            width: ListView.view.width
+            height: 40
 
-                    color: row.active ? Theme.nord8 : Theme.nord0
-                    opacity: (row.active || hover.hovered) ? 0.5 : 0.0
-                    z: 0
+            required property string modelData
+            required property int index
+            property bool active: index === KeyboardLayout.activeIndex
 
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: 250
-                            easing.type: Easing.OutCubic
-                        }
+            WrapperRectangle {
+                id: activeBg
+                anchors.fill: parent
+                margin: 10
+                radius: Appearance.popupRadius
+
+                color: Theme.nord8
+                opacity: row.active ? PopupSettings.activeHighlightOpacity : 0.0
+                z: 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.OutCubic
                     }
                 }
+            }
 
-                BarText {
-                    id: layoutText
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: 10
-                    z: 1
+            BarText {
+                id: layoutText
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: 10
+                z: 1
 
-                    icon: "󰌌"
-                    text: row.modelData
-                    iconColor: Theme.nord4
-                    textColor: Theme.nord4
+                icon: "󰌌"
+                text: row.modelData
+                iconColor: Theme.nord4
+                textColor: Theme.nord4
 
-                    iconPixelSize: 18
-                }
+                iconPixelSize: 18
+            }
 
-                HoverHandler {
-                    id: hover
-                    cursorShape: Qt.PointingHandCursor
-                }
-
-                TapHandler {
-                    onTapped: {
-                        KeyboardLayout.switchLayout(row.index);
+            HoverHandler {
+                id: hover
+                cursorShape: Qt.PointingHandCursor
+                onHoveredChanged: {
+                    if (hovered) {
+                        layoutList.currentIndex = row.index;
+                        popup.highlightedItem = row;
+                        popup.highlightedIndex = row.index;
                     }
+                }
+            }
+
+            TapHandler {
+                onTapped: {
+                    KeyboardLayout.switchLayout(row.index);
                 }
             }
         }

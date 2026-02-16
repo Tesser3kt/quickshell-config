@@ -42,7 +42,9 @@ Variants {
             topMargin: Appearance.barPadding.topMargin
             bottomMargin: Appearance.barPadding.bottomMargin
 
-            Bar {}
+            Bar {
+                screen: barPanel.screen
+            }
         }
     }
 }

@@ -17,114 +17,187 @@ PopupWrapper {
     id: popup
 
     required property var allWindows
+    property int highlightedIndex: -1
+    property var highlightedItem: null
+    property var closingAddresses: []
 
     function focusWindow(address) {
         Hyprland.dispatch(`focuswindow address:0x${address}`);
         hoverPopup = false;
     }
 
-    function closeWindow(address) {
+    function closeWindow(address, index) {
+        closingAddresses.push(address);
+        closingAddressesChanged();
+    }
+
+    function actuallyCloseWindow(address) {
         Hyprland.dispatch(`closewindow address:0x${address}`);
-        AllWindows.refresh();
+        closingAddresses = closingAddresses.filter(addr => addr !== address);
     }
 
-    Process {
-        id: killWindow
-
-        property int pid
-
-        command: ["kill", `${pid}`]
-        running: false
+    onHighlightedIndexChanged: {
+        windowsList.currentIndex = highlightedIndex;
     }
 
-    content: ColumnLayout {
+    onVisibleChanged: {
+        if (!visible) {
+            highlightedIndex = -1;
+            highlightedItem = null;
+        }
+    }
+
+    Component {
+        id: highlight
+        Rectangle {
+            radius: Appearance.popupRadius
+
+            color: Theme.nord0
+            z: 0
+        }
+    }
+
+    content: ListView {
+        id: windowsList
+
+        implicitWidth: 340
+        implicitHeight: contentHeight
+
         spacing: 4
-        Repeater {
-            model: popup.allWindows
+        interactive: false
 
-            Item {
-                id: row
+        model: popup.allWindows
+        highlight: highlight
+        highlightFollowsCurrentItem: true
+        focus: true
 
-                implicitWidth: 340
-                implicitHeight: 40
+        highlightMoveDuration: PopupSettings.highlightMoveDuration
+        highlightMoveVelocity: PopupSettings.highlightMoveVelocity
 
-                required property var modelData
-                required property int index
+        onModelChanged: {
+            currentIndex = popup.highlightedIndex;
+            highlight.y = popup.highlightedItem.y || 0;
+        }
 
-                WrapperRectangle {
-                    id: bg
-                    anchors.fill: parent
-                    margin: 10
-                    radius: Appearance.popupRadius
+        delegate: Item {
+            id: row
 
-                    color: row.modelData.active ? Theme.nord10 : Theme.nord0
-                    opacity: (row.modelData.active || hover.hovered) ? 1.0 : 0.0
-                    z: 0
+            width: ListView.view.width
+            height: closing ? 0 : 40
+            opacity: closing ? 0 : 1
+            clip: true
 
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: 250
-                            easing.type: Easing.OutCubic
-                        }
+            required property var modelData
+            required property int index
+
+            property bool closing: popup.closingAddresses.includes(modelData.address)
+
+            Behavior on height {
+                NumberAnimation {
+                    duration: PopupSettings.animDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: PopupSettings.animDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            onClosingChanged: {
+                if (closing) {
+                    closeTimer.start();
+                }
+            }
+
+            Timer {
+                id: closeTimer
+                interval: PopupSettings.animDuration
+                repeat: false
+                onTriggered: popup.actuallyCloseWindow(row.modelData.address)
+            }
+
+            WrapperRectangle {
+                id: activeBg
+                anchors.fill: parent
+                margin: 10
+                radius: Appearance.popupRadius
+
+                color: Theme.nord10
+                opacity: row.modelData.active ? PopupSettings.activeHighlightOpacity : 0.0
+                z: 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.OutCubic
                     }
                 }
+            }
 
-                WrapperRectangle {
-                    id: tapArea
-                    anchors.fill: parent
-                    anchors.rightMargin: 40
-                    color: "transparent"
-                    z: 1
+            WrapperRectangle {
+                id: tapArea
+                anchors.fill: parent
+                anchors.rightMargin: 40
+                color: "transparent"
+                z: 1
+
+                TapHandler {
+                    id: tapHandler
+                    onTapped: {
+                        popup.focusWindow(row.modelData.address);
+                    }
+                }
+            }
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+
+                BarText {
+                    id: windowTitle
+                    z: 2
+
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+
+                    icon: row.modelData.icon
+                    text: row.modelData.title
+                    iconColor: Theme.nord4
+                    textColor: Theme.nord4
+
+                    iconPixelSize: 18
+                }
+
+                BarText {
+                    id: closeIcon
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    z: 2
+
+                    icon: "󰅗"
+                    iconColor: Theme.nord12
 
                     TapHandler {
-                        id: tapHandler
+                        id: closeTapHandler
                         onTapped: {
-                            popup.focusWindow(row.modelData.address);
+                            popup.closeWindow(row.modelData.address, row.index);
                         }
                     }
                 }
+            }
 
-                RowLayout {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
-                    anchors.fill: parent
-
-                    BarText {
-                        id: windowTitle
-                        z: 2
-
-                        Layout.alignment: Qt.AlignLeft
-
-                        icon: row.modelData.icon
-                        text: row.modelData.title
-                        iconColor: Theme.nord4
-                        textColor: Theme.nord4
-
-                        iconPixelSize: 18
+            HoverHandler {
+                id: hover
+                cursorShape: Qt.PointingHandCursor
+                onHoveredChanged: {
+                    if (hovered) {
+                        windowsList.currentIndex = row.index;
+                        popup.highlightedItem = row;
+                        popup.highlightedIndex = row.index;
                     }
-
-                    BarText {
-                        id: closeIcon
-                        Layout.alignment: Qt.AlignRight
-                        z: 2
-
-                        icon: ""
-                        iconColor: Theme.nord12
-
-                        TapHandler {
-                            id: closeTapHandler
-                            onTapped: {
-                                popup.closeWindow(row.modelData.address);
-                            }
-                        }
-                    }
-                }
-
-                HoverHandler {
-                    id: hover
-                    cursorShape: Qt.PointingHandCursor
                 }
             }
         }

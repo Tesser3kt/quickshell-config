@@ -8,11 +8,13 @@ import qs.components.modules.popups
 RowLayout {
     id: root
 
+    required property ShellScreen screen
     anchors.verticalCenter: parent.verticalCenter
 
     RowLayout {
         id: leftModules
         spacing: Appearance.itemSpacing
+        Layout.alignment: Qt.AlignLeft
 
         Clock {
             id: clockModule
@@ -49,5 +51,11 @@ RowLayout {
             textColor: Theme.nord6
             hoverEnabled: true
         }
+    }
+
+    RowLayout {
+        id: centerModules
+        spacing: Appearance.itemSpacing
+        Layout.alignment: Qt.AlignHCenter
     }
 }
