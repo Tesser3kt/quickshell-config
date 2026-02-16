@@ -5,5 +5,8 @@ JsonObject {
         property JsonObject clock: JsonObject {
             property string timeFormat: "hh:mm:ss"
         }
+        property JsonObject workspaces: JsonObject {
+            property int spacing: 8
+        }
     }
 }

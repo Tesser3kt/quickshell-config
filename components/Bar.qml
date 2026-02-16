@@ -5,16 +5,21 @@ import qs.config
 import qs.components.modules.bar
 import qs.components.modules.popups
 
-RowLayout {
+Item {
     id: root
 
     required property ShellScreen screen
-    anchors.verticalCenter: parent.verticalCenter
+    anchors.fill: parent
+    anchors.margins: {
+        left: Appearance.barPadding.left;
+        right: Appearance.barPadding.right;
+    }
 
     RowLayout {
         id: leftModules
         spacing: Appearance.itemSpacing
-        Layout.alignment: Qt.AlignLeft
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
 
         Clock {
             id: clockModule
@@ -56,6 +61,18 @@ RowLayout {
     RowLayout {
         id: centerModules
         spacing: Appearance.itemSpacing
-        Layout.alignment: Qt.AlignHCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+
+        Workspaces {
+            screen: root.screen
+        }
+    }
+
+    RowLayout {
+        id: rightModules
+        spacing: Appearance.itemSpacing
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
     }
 }

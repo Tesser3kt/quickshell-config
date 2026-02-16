@@ -11,7 +11,7 @@ JsonObject {
     }
 
     property JsonObject listView: JsonObject {
-        property int highlightMoveDuration: 150
+        property int highlightMoveDuration: 100
         property real highlightMoveVelocity: -1
         property real activeHighlightOpacity: 0.7
     }

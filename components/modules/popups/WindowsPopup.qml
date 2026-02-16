@@ -49,7 +49,9 @@ PopupWrapper {
 
     Component {
         id: highlight
+
         Rectangle {
+            id: highlightRect
             radius: Appearance.popupRadius
 
             color: Theme.nord0
@@ -76,7 +78,6 @@ PopupWrapper {
 
         onModelChanged: {
             currentIndex = popup.highlightedIndex;
-            highlight.y = popup.highlightedItem.y || 0;
         }
 
         delegate: Item {
@@ -119,10 +120,9 @@ PopupWrapper {
                 onTriggered: popup.actuallyCloseWindow(row.modelData.address)
             }
 
-            WrapperRectangle {
+            Rectangle {
                 id: activeBg
                 anchors.fill: parent
-                margin: 10
                 radius: Appearance.popupRadius
 
                 color: Theme.nord10
@@ -137,7 +137,7 @@ PopupWrapper {
                 }
             }
 
-            WrapperRectangle {
+            Rectangle {
                 id: tapArea
                 anchors.fill: parent
                 anchors.rightMargin: 40
