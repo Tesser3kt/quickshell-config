@@ -19,6 +19,58 @@ Rectangle {
     implicitHeight: Appearance.barHeight
     implicitWidth: workspaceList.width
 
+    property var monitor: {
+        const monitors = Hyprland.monitors;
+        return monitors.values.filter(mon => mon.name === screen.name)[0] || null;
+    }
+
+    property var allWorkspaces: Hyprland.workspaces
+    property var workspaces: []
+    property int activeWorkspaceIndex: -1
+    property real highlightTargetX: 0
+
+    Timer {
+        id: refreshTimer
+        interval: 10
+        repeat: false
+        onTriggered: workspacesWrapper.refresh()
+    }
+
+    function refresh() {
+        // Get this monitor workspaces
+        const allWorkspaces = Hyprland.workspaces;
+        const thisMonitorWorkspaces = monitor ? allWorkspaces.values.filter(ws => ws.monitor.name === monitor.name) : [];
+        workspaces = thisMonitorWorkspaces;
+
+        // Get the active workspace for this monitor
+        const monitorActiveWorkspace = monitor ? monitor.activeWorkspace : null;
+
+        let newActiveIndex = -1;
+
+        if (monitorActiveWorkspace && thisMonitorWorkspaces && thisMonitorWorkspaces.length > 0) {
+            for (let i = 0; i < thisMonitorWorkspaces.length; i++) {
+                if (thisMonitorWorkspaces[i].name === monitorActiveWorkspace.name) {
+                    newActiveIndex = i;
+                    break;
+                }
+            }
+        }
+
+        activeWorkspaceIndex = newActiveIndex;
+        workspaceList.currentIndex = activeWorkspaceIndex;
+    }
+
+    // Update highlight target position when currentIndex changes and items are ready
+    onActiveWorkspaceIndexChanged: {
+        Qt.callLater(updateHighlightPosition);
+    }
+
+    function updateHighlightPosition() {
+        if (workspaceBgList.currentItem) {
+            highlightTargetX = workspaceBgList.currentItem.x;
+        }
+    }
+
     ListView {
         id: workspaceList
         z: 1
@@ -28,33 +80,7 @@ Rectangle {
 
         spacing: BarSettings.workspaces.spacing
 
-        property ShellScreen screen: workspacesWrapper.screen
-        property var monitor: {
-            const monitors = Hyprland.monitors;
-            return monitors.values.filter(mon => mon.name === screen.name)[0] || null;
-        }
-        property var workspaces: {
-            const allWorkspaces = Hyprland.workspaces;
-            return monitor ? allWorkspaces.values.filter(ws => ws.monitor.name === monitor.name) : null;
-        }
-        property var focusedWorkspace: Hyprland.focusedWorkspace
-
-        onFocusedWorkspaceChanged: updateCurrentIndex()
-
-        function updateCurrentIndex() {
-            let activeIndex = -1;
-            for (let i = 0; i < workspaces.length; i++) {
-                if (workspaces[i].name === Hyprland.focusedWorkspace.name) {
-                    activeIndex = i;
-                    break;
-                }
-            }
-
-            currentIndex = activeIndex;
-            console.log(currentIndex);
-        }
-
-        model: workspaces
+        model: workspacesWrapper.workspaces
 
         delegate: Item {
             id: workspace
@@ -82,6 +108,12 @@ Rectangle {
 
                 text: workspace.modelData.name
                 textColor: Theme.nord4
+                textPixelSize: 16
+                bold: true
+            }
+
+            TapHandler {
+                onTapped: Hyprland.dispatch(`workspace ${workspace.modelData.name}`)
             }
         }
     }
@@ -95,13 +127,14 @@ Rectangle {
 
         spacing: BarSettings.workspaces.spacing
 
-        model: workspaceList.workspaces
+        model: workspacesWrapper.workspaces
 
         currentIndex: workspaceList.currentIndex
         highlight: highlightActive
         highlightFollowsCurrentItem: false
 
         delegate: Rectangle {
+            z: 0
             radius: Appearance.itemRadius
 
             implicitWidth: Appearance.barHeight
@@ -115,9 +148,10 @@ Rectangle {
         id: highlightActive
 
         Rectangle {
-            z: 1
+            z: 999
             radius: Appearance.itemRadius
-            x: workspaceBgList.currentItem ? workspaceBgList.currentItem.x : 0
+            x: workspacesWrapper.highlightTargetX
+            visible: workspaceBgList.currentIndex >= 0
 
             implicitWidth: Appearance.barHeight
             implicitHeight: Appearance.barHeight
@@ -127,9 +161,23 @@ Rectangle {
             Behavior on x {
                 SpringAnimation {
                     spring: 2
-                    damping: 0.2
+                    damping: 0.3
+                    velocity: 400
                 }
             }
         }
     }
+
+    Connections {
+        target: Hyprland
+
+        function onRawEvent(ev) {
+            // Refresh on workspace switch, monitor focus change, or workspace creation/deletion/movement
+            if (ev.name === "workspace" || ev.name === "focusedMon" || ev.name === "createWorkspace" || ev.name === "destroyWorkspace" || ev.name === "moveWorkspace") {
+                refreshTimer.restart();
+            }
+        }
+    }
+
+    Component.onCompleted: refresh()
 }

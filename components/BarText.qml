@@ -17,6 +17,8 @@ RowLayout {
     property color iconColor
     property color textColor
 
+    property bool bold: false
+
     property int iconPixelSize: Appearance.font.iconPixelSize
     property string iconFamily: Appearance.font.iconFamily
     property int textPixelSize: Appearance.font.textPixelSize
@@ -29,6 +31,7 @@ RowLayout {
         font {
             pixelSize: root.iconPixelSize
             family: root.iconFamily
+            bold: root.bold
         }
         color: root.iconColor
     }
@@ -40,6 +43,7 @@ RowLayout {
         font {
             pixelSize: root.textPixelSize
             family: root.textFamily
+            bold: root.bold
         }
         transform: Translate {
             y: Appearance.textVerticalOffset
