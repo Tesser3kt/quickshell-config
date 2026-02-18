@@ -106,7 +106,13 @@ Rectangle {
                 id: workspaceText
                 anchors.centerIn: parent
 
-                text: workspace.modelData.name
+                text: {
+                    let id = workspace.modelData.id;
+                    if (Hyprland.monitors.values.length > 1) {
+                        id %= 5;
+                    }
+                    return id;
+                }
                 textColor: Theme.nord4
                 textPixelSize: 16
                 bold: true
@@ -179,5 +185,5 @@ Rectangle {
         }
     }
 
-    Component.onCompleted: refresh()
+    Component.onCompleted: refreshTimer.restart()
 }
