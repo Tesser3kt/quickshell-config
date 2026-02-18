@@ -106,7 +106,7 @@ Rectangle {
                 id: workspaceText
                 anchors.centerIn: parent
 
-                text: workspace.modelData.name
+                text: `${workspace.index + 1}`
                 textColor: Theme.nord4
                 textPixelSize: 16
                 bold: true
@@ -179,5 +179,5 @@ Rectangle {
         }
     }
 
-    Component.onCompleted: refresh()
+    Component.onCompleted: refreshTimer.restart()
 }
