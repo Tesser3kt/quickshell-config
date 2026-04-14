@@ -4,5 +4,5 @@ import QtQuick
 import "components"
 
 Scope {
-  BarWrapper {}
+    BarWrapper {}
 }

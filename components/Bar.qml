@@ -65,6 +65,8 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
 
         Workspaces {
+            id: workspacesModule
+
             screen: root.screen
         }
     }
@@ -74,5 +76,9 @@ Item {
         spacing: Appearance.itemSpacing
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
+
+        Tray {
+            id: trayModule
+        }
     }
 }

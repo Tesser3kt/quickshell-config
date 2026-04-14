@@ -9,4 +9,7 @@ JsonObject {
             property int spacing: 8
         }
     }
+    property JsonObject tray: JsonObject {
+        property var hiddenApps: ["udiskie"]
+    }
 }

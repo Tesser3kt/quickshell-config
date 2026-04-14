@@ -15,4 +15,6 @@ Singleton {
     readonly property int popupRadius: Config.appearance.popup.radius
     readonly property int popupGap: Config.appearance.popup.gap
     readonly property string popupBgColor: Config.appearance.popup.backgroundColor
+    readonly property int trayIconSize: Config.appearance.bar.tray.icon.size
+    readonly property int trayIconPadding: Config.appearance.bar.tray.icon.padding
 }

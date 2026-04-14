@@ -31,6 +31,12 @@ JsonObject {
             }
             property int radius: 8
         }
+        property JsonObject tray: JsonObject {
+            property JsonObject icon: JsonObject {
+                property int size: 20
+                property int padding: 8
+            }
+        }
     }
     property JsonObject popup: JsonObject {
         property JsonObject padding: JsonObject {
