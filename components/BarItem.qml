@@ -10,12 +10,19 @@ Rectangle {
     required property color backgroundColor
     required property bool hoverEnabled
     property var padding: Appearance.itemPadding
+    property bool tapped: false
 
     color: backgroundColor
     radius: Appearance.itemRadius
 
     implicitWidth: content.implicitWidth + padding.left + padding.right
     implicitHeight: content.implicitHeight + padding.top + padding.bottom
+
+    TapHandler {
+        id: tapHandler
+        onTapped: root.tapped = !root.tapped
+        acceptedButtons: Qt.RightButton
+    }
 
     children: [content]
 

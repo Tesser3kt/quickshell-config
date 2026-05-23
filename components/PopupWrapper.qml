@@ -28,9 +28,10 @@ PopupWindow {
         anchor.updateAnchor()
 
     // Hover logic
-    property bool hoverAnchor: false
+    property bool tapAnchor: false
     property bool hoverPopup: false
-    readonly property bool hovered: hoverAnchor || hoverPopup
+    property bool tapped: tapAnchor
+    readonly property bool hovered: tapped || hoverPopup
     property bool wantsVisible: false
 
     visible: wantsVisible
@@ -41,7 +42,25 @@ PopupWindow {
     property bool closing: false
 
     HoverHandler {
-        onHoveredChanged: popup.hoverPopup = hovered
+        onHoveredChanged: {
+            popup.hoverPopup = hovered;
+        }
+    }
+
+    onTapAnchorChanged: {
+        if (tapAnchor)
+            showPopup();
+        else
+            requestClose();
+    }
+
+    onHoverPopupChanged: {
+        if (hoverPopup) {
+            closeDelay.stop();
+            hideAfterAnim.stop();
+        } else if (popup.visible) {
+            requestClose();
+        }
     }
 
     Timer {
@@ -49,7 +68,9 @@ PopupWindow {
         interval: PopupSettings.hideDelay
         repeat: false
         onTriggered: {
-            if (!popup.hovered) {
+            if (!popup.hoverPopup) {
+                if (anchorItem && anchorItem.tapped !== undefined)
+                    anchorItem.tapped = false;
                 frame.state = "closed";
                 hideAfterAnim.restart();
             }
@@ -80,14 +101,6 @@ PopupWindow {
 
     function requestClose() {
         closeDelay.restart();
-    }
-
-    onHoveredChanged: {
-        if (hovered) {
-            showPopup();
-        } else {
-            requestClose();
-        }
     }
 
     // Content

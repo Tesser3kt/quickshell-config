@@ -129,17 +129,13 @@ BarItem {
         iconPixelSize: 18
     }
 
-    HoverHandler {
-        id: hoverHandler
-    }
-
     WindowsPopup {
         id: windowsPopup
 
         allWindows: root.allWindows
 
         anchorItem: root
-        hoverAnchor: hoverHandler.hovered
+        tapAnchor: root.tapped
     }
 
     // Watch for active window changes

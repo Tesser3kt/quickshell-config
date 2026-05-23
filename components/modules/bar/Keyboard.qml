@@ -22,14 +22,10 @@ BarItem {
         iconPixelSize: 18
     }
 
-    HoverHandler {
-        id: hoverHandler
-    }
-
     LayoutPopup {
         id: layoutPopup
 
         anchorItem: root
-        hoverAnchor: hoverHandler.hovered
+        tapAnchor: root.tapped
     }
 }

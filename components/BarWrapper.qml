@@ -31,6 +31,13 @@ Variants {
             right: true
         }
 
+        margins {
+            top: Appearance.barMargin.top
+            bottom: Appearance.barMargin.bottom
+            right: Appearance.barMargin.right
+            left: Appearance.barMargin.left
+        }
+
         implicitHeight: Appearance.barHeight
 
         WrapperRectangle {
@@ -39,8 +46,8 @@ Variants {
 
             leftMargin: Appearance.barPadding.left
             rightMargin: Appearance.barPadding.right
-            topMargin: Appearance.barPadding.topMargin
-            bottomMargin: Appearance.barPadding.bottomMargin
+            topMargin: Appearance.barPadding.top
+            bottomMargin: Appearance.barPadding.bottom
 
             Bar {
                 screen: barPanel.screen

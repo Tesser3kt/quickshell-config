@@ -119,7 +119,8 @@ Rectangle {
             }
 
             TapHandler {
-                onTapped: Hyprland.dispatch(`workspace ${workspace.modelData.name}`)
+                id: focusWorkspaceTapHandler
+                onTapped: Hyprland.dispatch(`hl.dsp.focus({ workspace = "${workspace.modelData.name}" })`)
             }
         }
     }

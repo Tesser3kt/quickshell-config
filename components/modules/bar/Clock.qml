@@ -24,14 +24,10 @@ BarItem {
         textColor: root.textColor
     }
 
-    HoverHandler {
-        id: hoverHandler
-    }
-
     DatePopup {
         id: datePopup
 
         anchorItem: root
-        hoverAnchor: hoverHandler.hovered
+        tapAnchor: root.tapped
     }
 }

@@ -11,6 +11,12 @@ JsonObject {
                 property int top: 5
                 property int bottom: 5
             }
+            property JsonObject margin: JsonObject {
+                property int top: 10
+                property int bottom: 0
+                property int right: 0
+                property int left: 0
+            }
         }
         property JsonObject text: JsonObject {
             property JsonObject font: JsonObject {

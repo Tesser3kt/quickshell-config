@@ -6,6 +6,7 @@ Singleton {
     readonly property int itemSpacing: Config.appearance.bar.layout.itemSpacing
     readonly property int barHeight: Config.appearance.bar.layout.height
     readonly property var barPadding: Config.appearance.bar.layout.padding
+    readonly property var barMargin: Config.appearance.bar.layout.margin
     readonly property var font: Config.appearance.bar.text.font
     readonly property int iconSpacing: Config.appearance.bar.text.iconSpacing
     readonly property int textVerticalOffset: Config.appearance.bar.text.textVerticalOffset

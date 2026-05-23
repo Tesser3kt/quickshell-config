@@ -52,21 +52,16 @@ BarItem {
         command: ["systemctl", "--user", "start", "hypridle.service"]
         running: false
     }
-    
-    // Refresh uptime on hover. For some reason is needed...
-    HoverHandler {
-        id: hoverHandler
-        onHoveredChanged: {
-            if (hovered) {
-                Uptime.refresh();
-            }
-        }
+
+    TapHandler {
+        id: customTapHandler
+        onTapped: Uptime.refresh()
     }
 
     UptimePopup {
         id: uptimePopup
 
         anchorItem: root
-        hoverAnchor: hoverHandler.hovered
+        tapAnchor: root.tapped
     }
 }
