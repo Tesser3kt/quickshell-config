@@ -145,7 +145,8 @@ Rectangle {
             radius: Appearance.itemRadius
 
             implicitWidth: Appearance.barHeight
-            implicitHeight: Appearance.barHeight
+            // Weird clipping happening.
+            implicitHeight: Appearance.barHeight - 1
 
             color: Theme.nord2
         }
@@ -161,7 +162,8 @@ Rectangle {
             visible: workspaceBgList.currentIndex >= 0
 
             implicitWidth: Appearance.barHeight
-            implicitHeight: Appearance.barHeight
+            // Weird clipping happening.
+            implicitHeight: Appearance.barHeight - 1
 
             color: Theme.nord10
 
