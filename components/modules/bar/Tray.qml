@@ -1,9 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
-import Quickshell.Hyprland
-import Quickshell.Io
-import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import QtQuick
 import qs.config
@@ -33,6 +30,19 @@ Rectangle {
             color: "transparent"
 
             required property SystemTrayItem modelData
+
+            function openMenu() {
+                if (!trayItem.visible || !trayItem.modelData.hasMenu || !trayItem.modelData.menu)
+                    return;
+
+                const window = trayItem.QsWindow.window;
+                if (!window)
+                    return;
+
+                const pos = trayItem.QsWindow.contentItem.mapFromItem(trayItem, 0, trayItem.height);
+                trayItem.modelData.display(window, pos.x, pos.y);
+            }
+
             Image {
                 id: trayItemIcon
                 anchors.centerIn: parent
@@ -45,8 +55,21 @@ Rectangle {
             }
 
             TapHandler {
-                onTapped: {
-                    trayItem.modelData.activate();
+                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                onTapped: (eventPoint, button) => {
+                    if (button === Qt.RightButton) {
+                        if (trayItem.modelData.hasMenu)
+                            trayItem.openMenu();
+                        else
+                            trayItem.modelData.secondaryActivate();
+                    } else if (button === Qt.MiddleButton) {
+                        trayItem.modelData.secondaryActivate();
+                    } else {
+                        if (trayItem.modelData.onlyMenu)
+                            trayItem.openMenu();
+                        else
+                            trayItem.modelData.activate();
+                    }
                 }
             }
         }
